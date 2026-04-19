@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  ci:
+    name: Testes (CI)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,4 +16,22 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt
-      - run: pytest teste_calculadora.py -v
+      - run: pytest teste_calculadora.py -v --tb=short > resultado_testes.txt 2>&1
+      - name: Salvar resultado dos testes
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultado-testes
+          path: resultado_testes.txt
+
+  cd:
+    name: Deploy (CD)
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Simular deploy
+        run: |
+          echo "Testes passaram!"
+          echo "Deploy realizado em $(date)"
+          echo "Versao: ${{ github.sha }}"
