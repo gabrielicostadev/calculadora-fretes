@@ -1,0 +1,19 @@
+﻿name: Testes Unitarios
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Instalar dependencias
+        run: pip install pytest
+
+      - name: Rodar testes
+        run: pytest teste_calculadora.py -v
